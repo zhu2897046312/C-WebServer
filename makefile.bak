@@ -1,0 +1,35 @@
+# 设置编译器和编译选项
+CXX = g++
+CXXFLAGS = -std=c++11 -g
+
+# 设置源文件、头文件、目标文件目录
+SRCDIR = src
+
+INCDIR = include
+HTTP_INCDIR = include/http
+OBJDIR = obj
+
+# 设置需要链接的库
+LIBS = -lboost_system -lboost_filesystem -lyaml-cpp -lpthread -lssl -lcrypto
+
+# 获取所有 .cc 文件
+SRCS = $(wildcard $(SRCDIR)/*.cc) $(wildcard $(SRCDIR)/http/*.cc)
+
+# 将 .cc 文件替换为 .o 文件
+OBJS = $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRCS))
+
+# 设置 Makefile 默认目标
+TARGET = my_program
+all: $(TARGET)
+
+# 编译目标文件
+$(OBJDIR)/%.o: $(SRCDIR)/%.cc
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) -c $< -o $@
+
+# 连接目标文件生成可执行文件
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(LIBS)
+
+# 清理编译生成的文件
+clean:
+	rm -f $(OBJDIR)/*.o $(TARGET)
